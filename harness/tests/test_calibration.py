@@ -3,9 +3,9 @@ import random
 
 import pytest
 
-from odruch.calibration import (MIN_ACCEPTED, automate, fit, fit_temperature, levels, served, temper, threshold,
+from tacit.calibration import (MIN_ACCEPTED, automate, fit, fit_temperature, levels, served, temper, threshold,
                                 threshold_of)
-from odruch.evaluate import coverage, evaluate
+from tacit.evaluate import coverage, evaluate
 
 
 def row(p, gold, t="noul", fam="f"):
@@ -95,7 +95,7 @@ def test_evaluate_shape():
     cal = fit(dev)
     res = evaluate(test, cal, vendor_cal=None, n_test_items=310, missing=["a"])
     assert res["n"] == 300 and res["n_test_items"] == 310 and res["missing"] == ["a"]
-    assert set(res["coverage"]["odruch"]) == {"0.01", "0.05"}
+    assert set(res["coverage"]["tacit"]) == {"0.01", "0.05"}
     assert 0 <= res["raw"]["ece"] <= 1 and 0 <= res["dev_calibrated"]["brier"] <= 2
 
 

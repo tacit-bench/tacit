@@ -1,11 +1,13 @@
 # Next steps (for Greg)
 
+Tacit: an independent European benchmark for System-1 decision models.
+
 Both repos exist only locally and have not been pushed:
 
-- `/Users/greg/apps/greg/odruch` (to become public)
-- `/Users/greg/apps/greg/odruch-private` (to stay private)
+- `/Users/greg/apps/greg/tacit` (to become public as `tacit-bench/tacit`)
+- `/Users/greg/apps/greg/tacit-private` (to stay private as `tacit-bench/tacit-private`)
 
-Nothing has been created on GitHub, Hugging Face or any registrar.
+No remote is configured in either repo.
 
 ## Before anything goes public: review
 
@@ -14,46 +16,47 @@ Nothing has been created on GitHub, Hugging Face or any registrar.
    Werdykt, JevBench and the AA Decision Index on their pages on the day you publish.
 2. Decide on the open choices listed at the end of this file.
 3. **system-1-ai leak guard** (`system-1-ai/BENCHMARK_LEAK_GUARD.md`). The 8 unpushed system-1-ai commits contain all
-   852 newer items, their gold and per-item model outputs. 652 of them are now the Odruch hidden test. Before pushing
+   852 newer items, their gold and per-item model outputs. 652 of them are now the Tacit hidden test. Before pushing
    system-1-ai: remove item texts, gold and per-item outputs of experiments 09 and 10 (keep aggregates and the
    manifest), and scrub item descriptions from `experiments/10-calibrate-1254/results.md`. These test items are named
    there with their content: LOG-003, BNK-008, CYB-008, CYB-054, UBZ-007, UBZ-017, WSP-001, KOM-041, plus ids in
    the slice tables (CYB-040 to CYB-060, KOM-034, LOG-034, PRD-003). ITS-002 and UCZ-003 are in dev.
 
-## Tomorrow: accounts and names
+## Accounts and names (in progress: Greg is creating the orgs now)
 
-1. **GitHub org `odruch`** (github.com/organizations/plan, free plan). Also consider reserving `odruchbench`, which
-   was free on 2026-10-19. Settings: 2FA required for members; "Allow forking of private repositories" off; base
-   member permission "Read".
-2. **Hugging Face org `odruch`** (huggingface.co/organizations/new). Only the dev split goes there, as a public
-   dataset (`odruch/odruch-pl-dev`) with the canary in the card. The test split never goes to Hugging Face, not even
-   as a private or gated repo.
-3. **Domains** `odruch.ai`, `odruch.eu`, `odruch.org` (all available on 2026-10-19). `.eu` needs an EU address
-   (yours or Prosit's Polish entity).
-4. **Trademark check.** EUIPO eSearch plus and TMview for "ODRUCH" (word mark), Nice classes 9, 41 and 42; UPRP
-   (Polish Patent Office) search at e-wyszukiwarka.uprp.gov.pl. The notes searched the web only, not the registers.
-   If clear, consider filing an EU word mark in class 42 (benchmarking and evaluation services).
+1. **GitHub org `tacit-bench`.** Repos: `tacit-bench/tacit` (public) and `tacit-bench/tacit-private` (private).
+   Settings: 2FA required for members; "Allow forking of private repositories" off; base member permission "Read".
+2. **Hugging Face org `tacit-bench`.** Only the dev split goes there, as the public dataset `tacit-bench/tacit-dev`
+   with the canary in the card. The test split never goes to Hugging Face, not even as a private or gated repo.
+3. **Domain** `tacitbench.ai` (optional: `tacit-bench.eu`, which needs an EU address, yours or Prosit's Polish entity).
+4. **Trademark check for "Tacit".** EUIPO eSearch plus and TMview for "TACIT" (word mark), Nice classes 9, 41 and
+   42; UPRP search at e-wyszukiwarka.uprp.gov.pl. "Tacit" is a common English word, so expect existing marks; check
+   whether any covers software or evaluation services before using it as a product name. If clear, consider filing
+   an EU word mark (e.g. "TACIT BENCH") in class 42 (benchmarking and evaluation services).
 
 ## Pushing the public repo
 
+Create `tacit-bench/tacit` on GitHub as **Public** and empty (no README, licence or .gitignore), then:
+
 ```bash
-cd /Users/greg/apps/greg/odruch
+cd /Users/greg/apps/greg/tacit
 git log --stat | head -40               # check that no test texts are in the history
 grep -rl "state" data/test/ || true     # must print nothing: only MANIFEST.sha256 is in data/test
-gh repo create odruch/odruch --public --source . --remote origin \
-  --description "Independent benchmark for fast typed-decision (System 1) models in European business"
+git remote add origin git@github.com:tacit-bench/tacit.git
 git push -u origin main
 ```
 
-Then: add topics (benchmark, calibration, polish, llm-evaluation), enable Discussions for submissions, and protect
-`main`.
+Then: description "Tacit: an independent European benchmark for System-1 decision models", topics (benchmark,
+calibration, polish, llm-evaluation), enable Discussions for submissions, protect `main`.
 
 ## Pushing the private repo
 
+Create `tacit-bench/tacit-private` on GitHub as **Private** first (empty, no README) and check that the repo page
+shows the "Private" badge before pushing. Then:
+
 ```bash
-cd /Users/greg/apps/greg/odruch-private
-gh repo create odruch/odruch-private --private --source . --remote origin \
-  --description "Hidden test split of Odruch. Never make public."
+cd /Users/greg/apps/greg/tacit-private
+git remote add origin git@github.com:tacit-bench/tacit-private.git
 git push -u origin main
 ```
 
@@ -61,6 +64,25 @@ Then in the repo settings: confirm visibility is Private; no outside collaborato
 third-party apps or AI code-review tools that send repo contents to a model provider; branch protection on `main`.
 Keep a local encrypted backup (the NAS backup folder is fine). Every evaluation run that sends test items to a
 provider gets a line in `PROVIDERS_LOG.md` before the run.
+
+## Hugging Face: dev split only
+
+Upload from a staging folder that holds only the dev files, never from the repo root and never `data/test/`:
+
+```bash
+cd /Users/greg/apps/greg/tacit
+STAGE=$(mktemp -d)
+cp data/dev/items.jsonl data/dev/labels.jsonl data/dev/SPLIT.json data/dev/LICENSE "$STAGE"/
+grep -c '"split": "test"' "$STAGE"/items.jsonl   # must print 0
+# dataset card: YAML header + the data card (it carries the canary)
+printf -- '---\nlicense: cc-by-4.0\nlanguage:\n- pl\npretty_name: Tacit dev split\n---\n\n' > "$STAGE"/README.md
+cat DATASHEET.md >> "$STAGE"/README.md
+hf auth login                                     # token with write access to tacit-bench
+hf repo create tacit-bench/tacit-dev --repo-type dataset
+hf upload tacit-bench/tacit-dev "$STAGE" . --repo-type dataset --commit-message "Tacit v0.1 dev split"
+```
+
+Never upload `data/test/` or anything from `tacit-private` to Hugging Face, not even to a private or gated repo.
 
 ## Plan for v0.2
 
@@ -89,7 +111,7 @@ provider gets a line in `PROVIDERS_LOG.md` before the run.
 1. **Dev size.** Followed the brief: 402 old + 200 new = 602 dev, 652 test. Consequence: 1% cannot be certified for
    choice or score by construction, and no model reached it for yes/no. A larger dev (e.g. 400 new items) would make
    1% reachable but shrink test.
-2. **Ranking column.** Sorted by coverage at 5% under the Odruch fit. Alternatives: coverage at 5% only among models
+2. **Ranking column.** Sorted by coverage at 5% under the Tacit fit. Alternatives: coverage at 5% only among models
    that hold, or no sorting.
 3. **"Holds"** uses the point estimate (realised error <= target). A stricter reading (upper CI <= target) is
    reported but never met at 1% with a few hundred decisions.

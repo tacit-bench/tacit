@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from odruch.metrics import accuracy, brier, cp_interval, cp_upper, ece, percentile, wilson
+from tacit.metrics import accuracy, brier, cp_interval, cp_upper, ece, percentile, wilson
 
 
 def test_wilson_known_value():
