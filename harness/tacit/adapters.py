@@ -72,7 +72,7 @@ class BasalServe:
 
     def __call__(self, item):
         data, status, lat = _post(self.url, basal_request(item))
-        return dict(id=item["id"], probs=basal_parse(item, data), latency_ms=lat, cost_usd=0.0,
+        return dict(id=item["id"], probs=basal_parse(item, data), latency_ms=lat, cost_usd=None,
                     http_status=status, error=(data or {}).get("error"))
 
 
@@ -113,15 +113,20 @@ def decisions_parse(item, resp):
 class OpenRouterDecisions:
     name = "openrouter"
 
-    def __init__(self, model, url="https://openrouter.ai/api/alpha/decisions", key_env="OPENROUTER_API_KEY"):
-        self.model, self.url = model, url
+    def __init__(self, model, url="https://openrouter.ai/api/alpha/decisions", key_env="OPENROUTER_API_KEY",
+                 provider=None):
+        """provider: OpenRouter provider preferences sent with every request, e.g. {"data_collection": "deny",
+        "zdr": true}; with these OpenRouter returns an error rather than route to a provider that does not comply."""
+        self.model, self.url, self.provider = model, url, provider
         self.key = os.environ.get(key_env)
         if not self.key:
             raise SystemExit(f"set {key_env} in the environment")
 
     def __call__(self, item):
-        data, status, lat = _post(self.url, decisions_request(item, self.model),
-                                  headers={"Authorization": f"Bearer {self.key}", "X-Title": "tacit"})
+        body = decisions_request(item, self.model)
+        if self.provider:
+            body["provider"] = self.provider
+        data, status, lat = _post(self.url, body, headers={"Authorization": f"Bearer {self.key}", "X-Title": "tacit"})
         usage = (data or {}).get("usage") or {}
         return dict(id=item["id"], probs=decisions_parse(item, data), latency_ms=lat, cost_usd=usage.get("cost"),
                     served_as=(data or {}).get("model"), provider=(data or {}).get("provider"),

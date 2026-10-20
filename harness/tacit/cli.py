@@ -3,6 +3,7 @@
   tacit validate  --items data/dev/items.jsonl [--preds preds.jsonl]
   tacit run       --adapter basal|openrouter|file --items data/dev/items.jsonl --out preds/dev/my-model.jsonl
                    [--url http://127.0.0.1:8000] [--model typesafe/jev-1.13] [--probs probs.json] [--budget-usd 5]
+                   [--provider '{"data_collection": "deny", "zdr": true}']
   tacit score     --items data/dev/items.jsonl --preds preds/dev/my-model.jsonl
   tacit fit       --items data/dev/items.jsonl --preds preds/dev/my-model.jsonl --out cal/my-model.json
   tacit evaluate  --items <test items> --preds <test preds> --cal cal/my-model.json [--vendor-cal v.json]
@@ -43,7 +44,8 @@ def cmd_run(a):
     if a.adapter == "file":
         write_jsonl(a.out, adapters.from_file(a.probs, items))
         return
-    ad = adapters.BasalServe(a.url) if a.adapter == "basal" else adapters.OpenRouterDecisions(a.model)
+    ad = (adapters.BasalServe(a.url) if a.adapter == "basal" else
+          adapters.OpenRouterDecisions(a.model, provider=json.loads(a.provider) if a.provider else None))
     done = {r["id"]: r for r in (load_predictions(a.out).values() if Path(a.out).exists() else [])
             if r.get("probs")}
     rows, spent = [], sum(r.get("cost_usd") or 0 for r in done.values())
@@ -107,6 +109,8 @@ def main(argv=None):
     p.add_argument("--model")
     p.add_argument("--probs")
     p.add_argument("--budget-usd", type=float)
+    p.add_argument("--provider", help='OpenRouter provider preferences as JSON, e.g. \'{"data_collection": "deny", '
+                   '"zdr": true}\'')
     p.set_defaults(f=cmd_run)
     for name, f in (("score", cmd_score), ("fit", cmd_fit), ("evaluate", cmd_evaluate)):
         p = sub.add_parser(name)
