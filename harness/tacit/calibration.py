@@ -126,6 +126,29 @@ def fit(dev_rows, targets=TARGETS):
                               min_accepted=MIN_ACCEPTED, alpha=ALPHA))
 
 
+def languages_of(rows):
+    return sorted({r.get("language") or r["item"]["language"] for r in rows})
+
+
+def fit_per_language(dev_rows, targets=TARGETS):
+    """Secondary view: one calibration per language, each fitted on that language's dev rows alone. Returns
+    {"protocol", "fit": "per-language", "per_language": {lang: fit(...)}}. A language with few dev decisions per type
+    can usually certify the 5% target only."""
+    per = {lang: fit([r for r in dev_rows if (r.get("language") or r["item"]["language"]) == lang], targets)
+           for lang in languages_of(dev_rows)}
+    return dict(protocol=PROTOCOL, fit="per-language", per_language=per)
+
+
+def calibration_for(cal, language):
+    """The calibration to apply to one language: a pooled calibration applies to every language; a per-language one
+    to its own language (KeyError if that language was not fitted)."""
+    if "per_language" in cal:
+        if language not in cal["per_language"]:
+            raise KeyError(f"per-language calibration has no fit for {language!r}")
+        return cal["per_language"][language]
+    return cal
+
+
 def floor(thresholds, targets):
     rs = sorted(float(r) for r in targets)
     for lo, hi in zip(rs, rs[1:]):

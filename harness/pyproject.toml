@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tacit-bench"
-version = "0.1.1"
+version = "0.2.0"
 description = "Harness of Tacit, an independent EU benchmark for System 1 decision models"
 requires-python = ">=3.10"
 license = {text = "MIT"}
