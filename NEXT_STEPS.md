@@ -1,6 +1,6 @@
 # Next steps (for Greg)
 
-Tacit: an independent European benchmark for System-1 decision models.
+Tacit: an independent EU benchmark for System 1 decision models.
 
 Repos: `tacit-bench/tacit` (public), `tacit-bench/tacit-private` (private), `tacit-bench/tacitbench-web` (the
 site, deployed to tacitbench.ai by CI on push to `main`).
@@ -61,7 +61,7 @@ git remote add origin git@github.com:tacit-bench/tacit.git
 git push -u origin main
 ```
 
-Then: description "Tacit: an independent European benchmark for System-1 decision models", topics (benchmark,
+Then: description "Tacit: an independent EU benchmark for System 1 decision models", topics (benchmark,
 calibration, polish, llm-evaluation), enable Discussions for submissions, protect `main`.
 
 ## Pushing the private repo
