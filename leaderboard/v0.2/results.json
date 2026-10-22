@@ -18151,7 +18151,7 @@
   },
   {
    "model": "basal-omni-1.0-max.basal233",
-   "label": "basal-omni-1.0-max",
+   "label": "basal-omni-1.0-max (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
@@ -20670,7 +20670,7 @@
   },
   {
    "model": "basal-omni-1.0-mini.basal233",
-   "label": "basal-omni-1.0-mini",
+   "label": "basal-omni-1.0-mini (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
@@ -23163,7 +23163,7 @@
   },
   {
    "model": "basal-omni-1.0-ultra.basal233",
-   "label": "basal-omni-1.0-ultra",
+   "label": "basal-omni-1.0-ultra (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
@@ -25683,7 +25683,7 @@
   },
   {
    "model": "basal-omni-1.1-max.basal233",
-   "label": "basal-omni-1.1-max",
+   "label": "basal-omni-1.1-max (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
@@ -28202,7 +28202,7 @@
   },
   {
    "model": "basal-2.0-max.basal233",
-   "label": "basal-2.0-max",
+   "label": "basal-2.0-max (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
@@ -30688,7 +30688,7 @@
   },
   {
    "model": "basal-2.0-4.5B.basal233",
-   "label": "basal-2.0-4.5B",
+   "label": "basal-2.0-4.5B (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
@@ -33135,7 +33135,7 @@
   },
   {
    "model": "basal-2.0-mini.basal233",
-   "label": "basal-2.0-mini",
+   "label": "basal-2.0-mini (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
@@ -35588,7 +35588,7 @@
   },
   {
    "model": "basal-omni-pico.basal233",
-   "label": "basal-omni-pico",
+   "label": "basal-omni-pico (basal 2.3.3)",
    "maker": "basal",
    "kind": "frozen",
    "run": {
