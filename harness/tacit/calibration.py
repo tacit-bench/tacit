@@ -141,10 +141,12 @@ def fit_per_language(dev_rows, targets=TARGETS):
 
 def calibration_for(cal, language):
     """The calibration to apply to one language: a pooled calibration applies to every language; a per-language one
-    to its own language (KeyError if that language was not fitted)."""
+    to its own language (ValueError if that language was not fitted)."""
     if "per_language" in cal:
         if language not in cal["per_language"]:
-            raise KeyError(f"per-language calibration has no fit for {language!r}")
+            raise ValueError(f"the per-language calibration has no fit for language {language!r} (fitted: "
+                             f"{', '.join(sorted(cal['per_language'])) or 'none'}); fit it on that language's dev "
+                             f"items too, or use a pooled calibration")
         return cal["per_language"][language]
     return cal
 
