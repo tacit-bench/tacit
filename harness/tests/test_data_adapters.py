@@ -60,6 +60,22 @@ def test_decisions_request_and_parse():
     assert decisions_parse(CHOICE, {}) is None
 
 
+def test_systemone_asks_for_raw_probabilities(monkeypatch):
+    from tacit import adapters
+    sent = {}
+
+    def fake_post(url, body, headers=None, **kw):
+        sent.update(url=url, body=body)
+        return {"answers": {"q": {"type": "noul", "noul": 0.3, "probabilities": {"true": 0.3, "false": 0.7}}}}, 200, 5.0
+
+    monkeypatch.setattr(adapters, "_post", fake_post)
+    r = adapters.SystemOne("http://h:8026/")(NOUL)
+    assert sent["url"] == "http://h:8026/v1/systemone"
+    assert sent["body"]["model"] == "decision" and sent["body"]["temperature"] == 1
+    assert sent["body"]["questions"]["q"]["criteria"] == {"true": "Tak", "false": "Nie"}
+    assert r["probs"] == {"yes": 0.3, "no": 0.7} and r["cost_usd"] is None
+
+
 def test_file_adapter_json_and_jsonl(tmp_path):
     p = tmp_path / "probs.json"
     p.write_text(json.dumps({"N1": {"yes": 0.6, "no": 0.4}}))

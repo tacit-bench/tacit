@@ -4,6 +4,8 @@
   basal     a running basal-serve (POST /v1/systemone). Start it without its own calibration (--no-calibration) so
             the probabilities are the model's raw ones; Tacit applies the dev-fitted calibration itself.
   openrouter  a decision API with the request shape of OpenRouter's /api/alpha/decisions (Jev-like models).
+  systemone   a self-hosted server with that same request shape at POST /v1/systemone (e.g. bielik-one), no key;
+            every request asks for temperature 1, so the probabilities are the model's raw ones.
   file      a JSON or JSONL file of probabilities produced elsewhere.
 
 HTTP uses the standard library only. API keys are read from the environment, never written anywhere.
@@ -130,6 +132,21 @@ class OpenRouterDecisions:
         usage = (data or {}).get("usage") or {}
         return dict(id=item["id"], probs=decisions_parse(item, data), latency_ms=lat, cost_usd=usage.get("cost"),
                     served_as=(data or {}).get("model"), provider=(data or {}).get("provider"),
+                    http_status=status, error=(data or {}).get("error"))
+
+
+class SystemOne:
+    """A self-hosted server with the decisions request shape (bielik-one's frontend). "temperature": 1 turns off the
+    server's own calibration for the request; Tacit applies the dev-fitted calibration itself."""
+    name = "systemone"
+
+    def __init__(self, url="http://127.0.0.1:8026", model="decision"):
+        self.url, self.model = url.rstrip("/") + "/v1/systemone", model
+
+    def __call__(self, item):
+        body = {**decisions_request(item, self.model), "temperature": 1}
+        data, status, lat = _post(self.url, body)
+        return dict(id=item["id"], probs=decisions_parse(item, data), latency_ms=lat, cost_usd=None,
                     http_status=status, error=(data or {}).get("error"))
 
 
